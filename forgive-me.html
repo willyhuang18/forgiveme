@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WuXiaoFei 原谅我好不好 🥺</title>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    overflow: hidden;
+    transition: background 0.8s ease;
+  }
+
+  .bg-sad {
+    background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 30%, #f48fb1 70%, #e1bee7 100%);
+  }
+
+  .bg-happy {
+    background: linear-gradient(135deg, #fff9c4 0%, #f0f4c3 30%, #dcedc8 60%, #c8e6c9 100%);
+  }
+
+  /* Floating hearts background */
+  .hearts-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .floating-heart {
+    position: absolute;
+    font-size: 20px;
+    opacity: 0.3;
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) rotate(0deg) scale(1); opacity: 0; }
+    10% { opacity: 0.3; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-10vh) rotate(360deg) scale(0.5); opacity: 0; }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+  }
+
+  .title {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 2.2rem;
+    color: #c2185b;
+    text-align: center;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(194, 24, 91, 0.2);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: #ad1457;
+    margin-bottom: 20px;
+    opacity: 0.8;
+    text-align: center;
+  }
+
+  .gif-container {
+    width: 280px;
+    height: 280px;
+    border-radius: 24px;
+    overflow: hidden;
+    margin-bottom: 25px;
+    box-shadow: 0 12px 40px rgba(194, 24, 91, 0.25);
+    border: 4px solid rgba(255,255,255,0.6);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.5s ease;
+  }
+
+  .gif-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .attempt-counter {
+    font-size: 0.9rem;
+    color: #ad1457;
+    margin-bottom: 15px;
+    opacity: 0.7;
+    min-height: 24px;
+  }
+
+  .buttons-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .btn-forgive {
+    background: linear-gradient(135deg, #e91e63, #f06292);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 16px 40px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10;
+    white-space: nowrap;
+  }
+
+  .btn-forgive:hover {
+    box-shadow: 0 8px 30px rgba(233, 30, 99, 0.6);
+    transform: scale(1.05);
+  }
+
+  .btn-refuse {
+    background: rgba(158, 158, 158, 0.3);
+    color: #888;
+    border: 2px solid rgba(158, 158, 158, 0.4);
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 5;
+    white-space: nowrap;
+  }
+
+  .btn-refuse:hover {
+    background: rgba(158, 158, 158, 0.4);
+  }
+
+  /* Success state */
+  .success-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: fadeInUp 0.8s ease;
+  }
+
+  .success-container.show {
+    display: flex;
+  }
+
+  .success-text {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 2.5rem;
+    color: #2e7d32;
+    margin-top: 20px;
+    animation: bounce 1s ease infinite;
+  }
+
+  .success-sub {
+    font-size: 1.2rem;
+    color: #558b2f;
+    margin-top: 10px;
+    opacity: 0.9;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  .shake {
+    animation: shake 0.5s ease;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+</style>
+</head>
+<body class="bg-sad">
+
+<div class="hearts-container" id="heartsContainer"></div>
+
+<div class="container">
+  <!-- Main asking phase -->
+  <div class="main-content" id="mainContent">
+    <div class="title" id="titleText">可以原谅我嘛 🥺</div>
+    <div class="subtitle" id="subtitleText">我知道错了，给我一个重新认识你的机会</div>
+
+    <div class="gif-container" id="gifContainer">
+      <img id="gifImage" src="" alt="求原谅">
+    </div>
+
+    <div class="attempt-counter" id="attemptCounter"></div>
+
+    <div class="buttons-wrapper" id="buttonsWrapper">
+      <button class="btn-forgive" id="btnForgive" onclick="forgive()">
+        ❤️ 好吧 原谅你了
+      </button>
+      <button class="btn-refuse" id="btnRefuse" onclick="refuse()">
+        😤 不要 不原谅
+      </button>
+    </div>
+  </div>
+
+  <!-- Success phase -->
+  <div class="success-container" id="successContent">
+    <div class="gif-container" id="successGif" style="width:300px;height:300px;box-shadow: 0 12px 40px rgba(46,125,50,0.25); border-color: rgba(255,255,255,0.8);">
+      <img id="successGifImage" src="" alt="开心">
+    </div>
+    <div class="success-text">谢谢你原谅我！❤️</div>
+    <div class="success-sub">我会真诚的对待你！💕</div>
+    <div style="margin-top: 20px; font-size: 3rem; animation: bounce 0.6s ease infinite;">
+      🥰
+    </div>
+  </div>
+</div>
+
+<script>
+  // Sad/begging GIFs (using placeholder cute animated GIF URLs)
+ const sadGifs = [
+    // User's picks
+    'https://media.giphy.com/media/fV8iuSEwLQ6005diSh/giphy.gif',
+    'https://media.giphy.com/media/bV1dTsVZ9lpleNYbBV/giphy.gif',
+    'https://media.giphy.com/media/p9dml4O9VCbE5qYb1s/giphy.gif',
+    'https://media.giphy.com/media/RFDXes97gboYg/giphy.gif',
+    // Similar cute sorry/sad GIFs
+    'https://media.giphy.com/media/OBNZCbTy1s8u8i7Wre/giphy.gif',
+    'https://media.giphy.com/media/PX6E0iX4x1O7fQ4pgt/giphy.gif',
+    'https://media.giphy.com/media/CEfgTpm6aaTnJB0emE/giphy.gif',
+    'https://media.giphy.com/media/FWcpMMCOoyM2tWrLLy/giphy.gif',
+  ];
+  const happyGifs = [
+    'https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif',
+  ];
+
+  const titles = [
+    '生气了吗～原谅我好不好 🥺',
+    '求求你了 别不理我 😢',
+    '我真的知道错了 🙏',
+    '不要生气了好不好 💔',
+    '给我一个机会嘛 😭',
+    '我以后一定注意 🥺',
+    '你不理我我好难过 😿',
+    '你是我最在乎的人 求你了 🥹',
+    '我什么都愿意做 原谅我吧 🙇',
+    '遇到你不容易 别让我失去你 💗',
+  ];
+
+  const subtitles = [
+    '我知道错了，再给我一次机会吧～',
+    '你不理我，我今晚睡不着的～',
+    '我可以做任何事来弥补！',
+    '你说什么我都答应！',
+    '我请你吃好吃的好不好～',
+    '想吃什么 去哪玩 你说了算！',
+    '我已经在反省了呜呜呜',
+    '好不容易遇到你 不想就这样失去',
+    '你不理我我真的会哭',
+    '点原谅吧 按钮都这么大了 🥺',
+  ];
+
+  const forgiveTexts = [
+    '❤️‍🔥 好啦好啦 原谅你',
+  ];
+
+  let refuseCount = 0;
+  let currentGifIndex = 0;
+
+  // Initialize
+  function init() {
+    document.getElementById('gifImage').src = sadGifs[0];
+    createFloatingHearts();
+  }
+
+  function createFloatingHearts() {
+    const container = document.getElementById('heartsContainer');
+    const hearts = ['💕', '💗', '💖', '💘', '🌸', '✨', '💝'];
+    for (let i = 0; i < 15; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'floating-heart';
+      heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+      heart.style.left = Math.random() * 100 + '%';
+      heart.style.animationDuration = (6 + Math.random() * 8) + 's';
+      heart.style.animationDelay = (Math.random() * 10) + 's';
+      heart.style.fontSize = (14 + Math.random() * 20) + 'px';
+      container.appendChild(heart);
+    }
+  }
+
+  function refuse() {
+    refuseCount++;
+
+    // Shake the whole container
+    const mainContent = document.getElementById('mainContent');
+    mainContent.classList.add('shake');
+    setTimeout(() => mainContent.classList.remove('shake'), 500);
+
+    // Change GIF
+    currentGifIndex = refuseCount % sadGifs.length;
+    const gifImg = document.getElementById('gifImage');
+    gifImg.style.opacity = '0';
+    setTimeout(() => {
+      gifImg.src = sadGifs[currentGifIndex];
+      gifImg.style.opacity = '1';
+    }, 200);
+    gifImg.style.transition = 'opacity 0.3s ease';
+
+    // Change title & subtitle
+    const titleIdx = Math.min(refuseCount, titles.length - 1);
+    document.getElementById('titleText').textContent = titles[titleIdx];
+    const subIdx = Math.min(refuseCount, subtitles.length - 1);
+    document.getElementById('subtitleText').textContent = subtitles[subIdx];
+
+    // Grow the forgive button
+    const btnForgive = document.getElementById('btnForgive');
+    const growth = Math.min(refuseCount * 0.2, 2.5);
+    const newFontSize = 1.2 + refuseCount * 0.15;
+    const newPaddingV = 16 + refuseCount * 4;
+    const newPaddingH = 40 + refuseCount * 10;
+    btnForgive.style.fontSize = Math.min(newFontSize, 3) + 'rem';
+    btnForgive.style.padding = `${Math.min(newPaddingV, 40)}px ${Math.min(newPaddingH, 120)}px`;
+    btnForgive.textContent = forgiveTexts[Math.min(refuseCount, forgiveTexts.length - 1)];
+
+    // Shrink the refuse button and move it around
+    const btnRefuse = document.getElementById('btnRefuse');
+    const shrink = Math.max(0.95 - refuseCount * 0.08, 0.4);
+    btnRefuse.style.fontSize = Math.max(0.95 - refuseCount * 0.06, 0.5) + 'rem';
+    btnRefuse.style.padding = `${Math.max(10 - refuseCount, 3)}px ${Math.max(24 - refuseCount * 2, 8)}px`;
+    btnRefuse.style.opacity = Math.max(1 - refuseCount * 0.08, 0.3);
+
+    // Move refuse button to random position after 3rd attempt
+    if (refuseCount >= 3) {
+      btnRefuse.style.position = 'absolute';
+      const wrapper = document.getElementById('buttonsWrapper');
+      const maxX = wrapper.offsetWidth - btnRefuse.offsetWidth - 20;
+      const maxY = wrapper.offsetHeight - btnRefuse.offsetHeight;
+      btnRefuse.style.left = Math.max(0, Math.random() * maxX) + 'px';
+      btnRefuse.style.top = Math.random() * Math.max(maxY, 50) + 'px';
+    }
+
+    // Update counter
+    const counter = document.getElementById('attemptCounter');
+    if (refuseCount === 1) counter.textContent = '你真的忍心拒绝我吗 😢';
+    else if (refuseCount === 2) counter.textContent = '再想想嘛～ 😿';
+    else if (refuseCount === 3) counter.textContent = '都拒绝 ' + refuseCount + ' 次了呜呜 💔';
+    else counter.textContent = '已经拒绝 ' + refuseCount + ' 次了... 你不心疼的吗 😭';
+
+    // After many refusals, make refuse button run away on hover
+    if (refuseCount >= 5) {
+      btnRefuse.onmouseover = () => {
+        const wrapper = document.getElementById('buttonsWrapper');
+        const maxX = wrapper.offsetWidth - 80;
+        btnRefuse.style.left = Math.random() * Math.max(maxX, 50) + 'px';
+        btnRefuse.style.top = Math.random() * 120 + 'px';
+      };
+    }
+  }
+
+  function forgive() {
+    // Switch to happy state
+    document.body.classList.remove('bg-sad');
+    document.body.classList.add('bg-happy');
+
+    document.getElementById('mainContent').style.display = 'none';
+    const successContent = document.getElementById('successContent');
+    successContent.classList.add('show');
+
+    document.getElementById('successGifImage').src = happyGifs[0];
+
+    // Launch confetti
+    launchConfetti();
+
+    // Change floating hearts to celebration
+    const container = document.getElementById('heartsContainer');
+    container.innerHTML = '';
+    const celebEmojis = ['🎉', '💖', '🥰', '✨', '💕', '🎊', '💗', '🌟', '💝', '🦋'];
+    for (let i = 0; i < 25; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'floating-heart';
+      piece.textContent = celebEmojis[Math.floor(Math.random() * celebEmojis.length)];
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.animationDuration = (4 + Math.random() * 6) + 's';
+      piece.style.animationDelay = (Math.random() * 5) + 's';
+      piece.style.fontSize = (16 + Math.random() * 28) + 'px';
+      piece.style.opacity = '0.5';
+      container.appendChild(piece);
+    }
+  }
+
+  function launchConfetti() {
+    const colors = ['#e91e63', '#ff5722', '#ff9800', '#ffeb3b', '#4caf50', '#2196f3', '#9c27b0', '#f44336'];
+    const shapes = ['circle', 'square'];
+
+    for (let i = 0; i < 80; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti-piece';
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const shape = shapes[Math.floor(Math.random() * shapes.length)];
+      confetti.style.background = color;
+      confetti.style.borderRadius = shape === 'circle' ? '50%' : '2px';
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.top = '-10px';
+      confetti.style.width = (6 + Math.random() * 10) + 'px';
+      confetti.style.height = (6 + Math.random() * 10) + 'px';
+      confetti.style.animation = `confettiFall ${2 + Math.random() * 3}s linear ${Math.random() * 2}s forwards`;
+      document.body.appendChild(confetti);
+
+      setTimeout(() => confetti.remove(), 6000);
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
